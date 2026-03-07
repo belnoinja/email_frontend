@@ -2,6 +2,7 @@ import { useState } from "react";
 import Stats from "../components/Stats";
 import RecruiterTable from "../components/RecruiterTable";
 import CsvUpload from "../components/CsvUpload";
+import TestPanel from "../components/TestPanel";
 import "../style.css";
 
 export default function Dashboard() {
@@ -36,6 +37,12 @@ export default function Dashboard() {
         >
           Import Contacts
         </button>
+        <button
+          className={`tab-btn ${activeTab === "testing" ? "active" : ""}`}
+          onClick={() => setActiveTab("testing")}
+        >
+          Tester
+        </button>
       </div>
 
       <div className="tab-content">
@@ -54,6 +61,12 @@ export default function Dashboard() {
         {activeTab === "actions" && (
           <div className="fade-in">
             <CsvUpload />
+          </div>
+        )}
+
+        {activeTab === "testing" && (
+          <div className="fade-in">
+            <TestPanel />
           </div>
         )}
       </div>
