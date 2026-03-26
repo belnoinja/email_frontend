@@ -40,8 +40,7 @@ export default function DailyReport() {
         </p>
         
         <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
-          {/* We reverse the data list if it is newest first, so the heatmap goes chronological but here we just render them */}
-          {reportData.map((day) => (
+          {[...reportData].reverse().map((day) => (
             <div
               key={day.date}
               title={`${day.sent} sent on ${day.date}`}
