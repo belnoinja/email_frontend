@@ -5,6 +5,7 @@ import CsvUpload from "../components/CsvUpload";
 import TestPanel from "../components/TestPanel";
 import TemplateManager from "../components/TemplateManager";
 import AnalyticsCharts from "../components/AnalyticsCharts";
+import DailyReport from "../components/DailyReport";
 import "../style.css";
 
 export default function Dashboard() {
@@ -32,6 +33,12 @@ export default function Dashboard() {
           onClick={() => setActiveTab("analytics")}
         >
           Analytics
+        </button>
+        <button
+          className={`tab-btn ${activeTab === "dailyReport" ? "active" : ""}`}
+          onClick={() => setActiveTab("dailyReport")}
+        >
+          Daily Report
         </button>
         <button
           className={`tab-btn ${activeTab === "templates" ? "active" : ""}`}
@@ -69,6 +76,12 @@ export default function Dashboard() {
         {activeTab === "analytics" && (
           <div className="fade-in">
             <AnalyticsCharts />
+          </div>
+        )}
+
+        {activeTab === "dailyReport" && (
+          <div className="fade-in">
+            <DailyReport />
           </div>
         )}
 
