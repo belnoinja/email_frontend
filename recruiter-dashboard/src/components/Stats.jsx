@@ -3,13 +3,38 @@ import { API_BASE } from "../config";
 
 export default function Stats() {
   const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const fetchStats = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/dashboard/stats`);
+      const data = await res.json();
+      setStats(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
-    fetch(`${API_BASE}/dashboard/stats`)
-      .then((res) => res.json())
-      .then(setStats)
-      .catch((err) => console.error(err));
+    fetchStats();
   }, []);
+
+  const handleDeleteFake = async () => {
+    if (!window.confirm("Are you sure you want to delete all fake email records?")) return;
+    
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/recruiters/fake`, { method: "DELETE" });
+      const result = await res.json();
+      alert(result.message);
+      fetchStats();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete fake emails.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!stats) return <p>Loading stats...</p>;
 
@@ -27,7 +52,14 @@ export default function Stats() {
       <Stat label="Sent" value={stats.sent} />
       <Stat label="Replied" value={stats.replied} />
       <Stat label="New" value={stats.new} />
-      <Stat label="Fake" value={stats.fake || 0} color="#b91c1c" />
+      <Stat 
+        label="Fake" 
+        value={stats.fake || 0} 
+        color="#b91c1c" 
+        onAction={handleDeleteFake} 
+        actionLabel="Clean"
+        loading={loading}
+      />
       <Stat label="Risky" value={stats.risky || 0} color="#854d0e" />
       <Stat label="Errors" value={stats.errors || 0} />
       <Stat label="Followups" value={stats.followups || 0} />
@@ -37,7 +69,7 @@ export default function Stats() {
   );
 }
 
-function Stat({ label, value, color }) {
+function Stat({ label, value, color, onAction, actionLabel, loading }) {
   return (
     <div
       className="card"
@@ -48,6 +80,7 @@ function Stat({ label, value, color }) {
         flexDirection: "column",
         justifyContent: "center",
         borderTop: color ? `4px solid ${color}` : "1px solid var(--border)",
+        position: "relative",
       }}
     >
       <h2
@@ -69,6 +102,38 @@ function Stat({ label, value, color }) {
       >
         {label}
       </p>
+      {onAction && value > 0 && (
+        <button
+          onClick={onAction}
+          disabled={loading}
+          style={{
+            position: "absolute",
+            top: "6px",
+            right: "6px",
+            background: "transparent",
+            border: `1px solid ${color || 'var(--border)'}`,
+            color: color || "var(--primary)",
+            fontSize: "11px",
+            fontWeight: "700",
+            cursor: "pointer",
+            padding: "2px 6px",
+            borderRadius: "4px",
+            textTransform: "uppercase",
+            opacity: 0.7,
+            transition: "all 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.opacity = 1;
+            e.target.style.background = (color || 'var(--primary)') + '10';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.opacity = 0.7;
+            e.target.style.background = 'transparent';
+          }}
+        >
+          {loading ? "..." : actionLabel}
+        </button>
+      )}
     </div>
   );
 }
